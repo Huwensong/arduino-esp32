@@ -84,6 +84,10 @@ typedef struct {
     const char                  *cert_pem;                  /*!< SSL Certification, PEM format as string, if the client requires to verify server */
     esp_websocket_transport_t   transport;                  /*!< Websocket transport type, see `esp_websocket_transport_t */
     char                        *subprotocol;               /*!< Websocket subprotocol */
+    bool                        keep_alive_enable;          /*!< Enable keep-alive timeout */
+    int                         keep_alive_idle;            /*!< Keep-alive idle time. Default is 5 (second) */
+    int                         keep_alive_interval;        /*!< Keep-alive interval time. Default is 5 (second) */
+    int                         keep_alive_count;           /*!< Keep-alive packet retry send count. Default is 3 counts */
 } esp_websocket_client_config_t;
 
 /**
@@ -123,6 +127,9 @@ esp_err_t esp_websocket_client_start(esp_websocket_client_handle_t client);
 /**
  * @brief      Close the WebSocket connection
  *
+ *  Notes:
+ *  - Cannot be called from the websocket event handler 
+ *
  * @param[in]  client  The client
  *
  * @return     esp_err_t
@@ -134,7 +141,10 @@ esp_err_t esp_websocket_client_stop(esp_websocket_client_handle_t client);
  *             This function must be the last function to call for an session.
  *             It is the opposite of the esp_websocket_client_init function and must be called with the same handle as input that a esp_websocket_client_init call returned.
  *             This might close all connections this handle has used.
- *
+ * 
+ *  Notes:
+ *  - Cannot be called from the websocket event handler
+ * 
  * @param[in]  client  The client
  *
  * @return     esp_err_t

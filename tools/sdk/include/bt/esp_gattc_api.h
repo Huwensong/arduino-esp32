@@ -258,7 +258,7 @@ typedef union {
 /**
  * @brief GATT Client callback function type
  * @param event : Event type
- * @param gatts_if : GATT client access interface, normally
+ * @param gattc_if : GATT client access interface, normally
  *                   different gattc_if correspond to different profile
  * @param param : Point to callback parameter, currently is union type
  */
@@ -312,7 +312,7 @@ esp_err_t esp_ble_gattc_app_unregister(esp_gatt_if_t gattc_if);
  * @param[in]       gattc_if: Gatt client access interface.
  * @param[in]       remote_bda: remote device bluetooth device address.
  * @param[in]       remote_addr_type: remote device bluetooth device the address type.
- * @param[in]       is_direct: direct connection or background auto connection
+ * @param[in]       is_direct: direct connection or background auto connection(by now, background auto connection is not supported).
  *
  * @return
  *                  - ESP_OK: success
@@ -611,6 +611,29 @@ esp_err_t esp_ble_gattc_read_char (esp_gatt_if_t gattc_if,
                                    uint16_t conn_id,
                                    uint16_t handle,
                                    esp_gatt_auth_req_t auth_req);
+
+/**
+ * @brief           This function is called to read a service's characteristics of
+ *                  the given characteristic UUID
+ *
+ * @param[in]       gattc_if: Gatt client access interface.
+ * @param[in]       conn_id : connection ID.
+ * @param[in]       start_handle : the attribute start handle.
+ * @param[in]       end_handle : the attribute end handle
+ * @param[in]       uuid : The UUID of attribute which will be read.
+ * @param[in]       auth_req : authenticate request type
+ *
+ * @return
+ *                  - ESP_OK: success
+ *                  - other: failed
+ *
+ */
+esp_err_t esp_ble_gattc_read_by_type (esp_gatt_if_t gattc_if,
+                                      uint16_t conn_id,
+                                      uint16_t start_handle,
+                                      uint16_t end_handle,
+                                      esp_bt_uuid_t *uuid,
+                                      esp_gatt_auth_req_t auth_req);
 
 /**
  * @brief           This function is called to read multiple characteristic or

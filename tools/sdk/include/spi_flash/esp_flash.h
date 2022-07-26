@@ -48,8 +48,11 @@ typedef struct {
     /** Called before any erase/write operations to check whether the region is limited by the OS */
     esp_err_t (*region_protected)(void* arg, size_t start_addr, size_t size);
 
-    /** Delay for at least 'ms' milliseconds. Called in between 'start' and 'end'. */
-    esp_err_t (*delay_ms)(void *arg, unsigned ms);
+    /** Delay for at least 'us' microseconds. Called in between 'start' and 'end'. */
+    esp_err_t (*delay_us)(void *arg, unsigned us);
+
+    /** Yield to other tasks. Called during erase operations. */
+    esp_err_t (*yield)(void *arg);
 } esp_flash_os_functions_t;
 
 /** @brief Structure to describe a SPI flash chip connected to the system.
@@ -85,6 +88,8 @@ struct esp_flash_t {
  * @return ESP_OK on success, or a flash error code if initialisation fails.
  */
 esp_err_t esp_flash_init(esp_flash_t *chip);
+
+esp_err_t app_xmc_flash_overerase_fix(void);
 
 /**
  * Check if appropriate chip driver is set.
