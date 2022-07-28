@@ -212,7 +212,10 @@ void initArduino()
     psramInit();
 #endif
     esp_log_level_set("*", CONFIG_LOG_DEFAULT_LEVEL);
+    printf("\n");
+    printf("log 1\n");
     esp_err_t err = nvs_flash_init();
+    printf("log 2\n");
     if(err == ESP_ERR_NVS_NO_FREE_PAGES){
         const esp_partition_t* partition = esp_partition_find_first(ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_DATA_NVS, NULL);
         if (partition != NULL) {
