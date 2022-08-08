@@ -23,7 +23,6 @@ void loopTask(void *pvParameters)
 
 extern "C" void app_main()
 {
-    Serial.begin(921600);
     loopTaskWDTEnabled = false;
     initArduino();
     xTaskCreateUniversal(loopTask, "loopTask", 8192, NULL, 1, &loopTaskHandle, CONFIG_ARDUINO_RUNNING_CORE);
