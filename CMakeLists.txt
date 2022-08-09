@@ -142,7 +142,6 @@ set(INC_LIST
   "libraries/Wire/src"
         "cores/esp32/libb64"
   )
-message(${INC_LIST})
 #set(COMPONENT_PRIV_INCLUDEDIRS cores/esp32/libb64)
 #
 #set(COMPONENT_REQUIRES spi_flash mbedtls mdns esp_adc_cal)
