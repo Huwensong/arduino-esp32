@@ -153,3 +153,5 @@ idf_component_register(SRCS "${SRCS_LIST}"
         INCLUDE_DIRS "${INC_LIST}"
         REQUIRES spi_flash mbedtls mdns esp_adc_cal
         PRIV_REQUIRES fatfs nvs_flash app_update spiffs bootloader_support openssl bt)
+
+target_compile_options(${COMPONENT_TARGET} PUBLIC -frtti)
