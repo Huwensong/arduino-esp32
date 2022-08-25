@@ -36,6 +36,7 @@ WiFiClientSecure::WiFiClientSecure()
     ssl_init(sslclient);
     sslclient->socket = -1;
     sslclient->handshake_timeout = 120000;
+    _use_insecure = false;
     _CA_cert = NULL;
     _cert = NULL;
     _private_key = NULL;
@@ -243,6 +244,16 @@ uint8_t WiFiClientSecure::connected()
     read(&dummy, 0);
 
     return _connected;
+}
+
+void WiFiClientSecure::setInsecure()
+{
+    _CA_cert = NULL;
+    _cert = NULL;
+    _private_key = NULL;
+    _pskIdent = NULL;
+    _psKey = NULL;
+    _use_insecure = true;
 }
 
 void WiFiClientSecure::setCACert (const char *rootCA)
