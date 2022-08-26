@@ -16,7 +16,7 @@
 
 using namespace fs;
 
-FileImplPtr VFSImpl::open(const char* path, const char* mode)
+FileImplPtr VFSImpl::open(const char* path, const char* mode, const bool create)
 {
     if(!_mountpoint) {
         log_e("File system is not mounted");
@@ -59,6 +59,50 @@ FileImplPtr VFSImpl::open(const char* path, const char* mode)
         closedir(d);
         free(temp);
         return std::make_shared<VFSFileImpl>(this, path, mode);
+    }
+
+    //file not found but mode permits file creation without folder creation
+    if((mode && mode[0] != 'r') && (!create)){
+        free(temp);
+        return std::make_shared<VFSFileImpl>(this, path, mode);
+    }
+
+    ////file not found but mode permits file creation and folder creation
+    if((mode && mode[0] != 'r') && create){
+
+        char *token;
+        char *folder = (char *)malloc(strlen(path));
+
+        int start_index = 0;
+        int end_index = 0;
+
+        token = strchr(path+1,'/');
+        end_index = (token-path);
+
+        while (token != NULL)
+        {
+            memcpy(folder,path + start_index, end_index-start_index);
+            folder[end_index-start_index] = '\0';
+
+            if(!VFSImpl::mkdir(folder))
+            {
+                log_e("Creating folder: %s failed!",folder);
+                return FileImplPtr();
+            }
+
+            token=strchr(token+1,'/');
+            if(token != NULL)
+            {
+                end_index = (token-path);
+                memset(folder, 0, strlen(folder));
+            }
+
+        }
+
+        free(folder);
+        free(temp);
+        return std::make_shared<VFSFileImpl>(this, path, mode);
+
     }
 
     log_e("%s does not exist", temp);
