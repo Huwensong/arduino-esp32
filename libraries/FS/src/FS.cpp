@@ -143,6 +143,15 @@ File::operator bool() const
     return !!_p;
 }
 
+const char* File::path() const
+{
+    if (!*this) {
+        return nullptr;
+    }
+
+    return _p->path();
+}
+
 const char* File::name() const
 {
     if (!_p) {

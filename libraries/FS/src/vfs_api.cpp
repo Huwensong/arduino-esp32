@@ -372,6 +372,11 @@ size_t VFSFileImpl::size() const
     return _stat.st_size;
 }
 
+const char* VFSFileImpl::path() const
+{
+    return (const char*) _path;
+}
+
 const char* VFSFileImpl::name() const
 {
     return (const char*) _path;
