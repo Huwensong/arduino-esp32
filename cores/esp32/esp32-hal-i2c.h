@@ -41,10 +41,11 @@ typedef enum {
 struct i2c_struct_t;
 typedef struct i2c_struct_t i2c_t;
 
-i2c_t * i2cInit(uint8_t i2c_num, int8_t sda, int8_t scl, uint32_t clk_speed);
+esp_err_t i2cInit(uint8_t i2c_num, int8_t sda, int8_t scl, uint32_t clk_speed);
 void i2cRelease(i2c_t *i2c); // free ISR, Free DQ, Power off peripheral clock.  Must call i2cInit() to recover
-i2c_err_t i2cWrite(i2c_t * i2c, uint16_t address, uint8_t* buff, uint16_t size, bool sendStop, uint16_t timeOutMillis);
-i2c_err_t i2cRead(i2c_t * i2c, uint16_t address, uint8_t* buff, uint16_t size, bool sendStop, uint16_t timeOutMillis, uint32_t *readCount);
+esp_err_t i2cWrite(uint8_t i2c_num, uint16_t address, const uint8_t* buff, size_t size, uint32_t timeOutMillis);
+esp_err_t i2cWriteReadNonStop(uint8_t i2c_num, uint16_t address, const uint8_t* wbuff, size_t wsize, uint8_t* rbuff, size_t rsize, uint32_t timeOutMillis, size_t *readCount);
+esp_err_t i2cRead(uint8_t i2c_num, uint16_t address, uint8_t* buff, size_t size, uint32_t timeOutMillis, size_t *readCount);
 i2c_err_t i2cFlush(i2c_t *i2c);
 i2c_err_t i2cSetFrequency(i2c_t * i2c, uint32_t clk_speed);
 uint32_t i2cGetFrequency(i2c_t * i2c);
@@ -64,6 +65,10 @@ i2c_err_t i2cAddQueueRead(i2c_t *i2c, uint16_t i2cDeviceAddr, uint8_t *dataPtr, 
 
 //stickbreaker debug support
 uint32_t i2cDebug(i2c_t *, uint32_t setBits, uint32_t resetBits);
+bool i2cIsInit(uint8_t i2c_num);
+esp_err_t i2cDeinit(uint8_t i2c_num);
+esp_err_t i2cSetClock(uint8_t i2c_num, uint32_t frequency);
+esp_err_t i2cGetClock(uint8_t i2c_num, uint32_t * frequency);
 //  Debug actions have 3 currently defined locus 
 // 0xXX------ : at entry of ProcQueue 
 // 0x--XX---- : at exit of ProcQueue
@@ -74,6 +79,7 @@ uint32_t i2cDebug(i2c_t *, uint32_t setBits, uint32_t resetBits);
 // bit 2 causes DumpCmdqueue to execute
 // bit 3 causes DumpStatus to execute
 // bit 4 causes DumpFifo to execute
+
 
 #ifdef __cplusplus
 }
