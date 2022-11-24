@@ -46,6 +46,7 @@
 #define HardwareSerial_h
 
 #include <inttypes.h>
+#include <functional>
 
 #include "Stream.h"
 #include "esp32-hal.h"
