@@ -20,7 +20,7 @@
 #include "WiFi.h"
 
 #ifndef MBEDTLS_KEY_EXCHANGE__SOME__PSK_ENABLED
-#  error "Please configure IDF framework to include mbedTLS -> Enable pre-shared-key ciphersuites and activate at least one cipher"
+//#  error "Please configure IDF framework to include mbedTLS -> Enable pre-shared-key ciphersuites and activate at least one cipher"
 #endif
 
 const char *pers = "esp32-tls";
@@ -150,12 +150,14 @@ int start_ssl_client(sslclient_context *ssl_client, const char *host, uint32_t p
             psk[j/2] |= c;
         }
         // set mbedtls config
+#if defined(MBEDTLS_KEY_EXCHANGE__SOME__PSK_ENABLED)
         ret = mbedtls_ssl_conf_psk(&ssl_client->ssl_conf, psk, psk_len,
                  (const unsigned char *)pskIdent, strlen(pskIdent));
         if (ret != 0) {
             log_e("mbedtls_ssl_conf_psk returned %d", ret);
             return handle_error(ret);
         }
+#endif
     } else {
         mbedtls_ssl_conf_authmode(&ssl_client->ssl_conf, MBEDTLS_SSL_VERIFY_NONE);
         log_i("WARNING: Use certificates for a more secure communication!");
