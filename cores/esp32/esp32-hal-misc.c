@@ -229,7 +229,7 @@ void initArduino()
     }
 #ifdef CONFIG_BT_ENABLED
     if(!btInUse()){
-        esp_bt_controller_mem_release(ESP_BT_MODE_BTDM);
+        esp_bt_controller_mem_release(ESP_BT_MODE_CLASSIC_BT);
     }
 #endif
     init();
