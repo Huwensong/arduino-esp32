@@ -25,6 +25,8 @@
 #include "pins_arduino.h"
 #include "esp32-hal-spi.h"
 
+#define SPI_HAS_TRANSACTION
+
 class SPISettings
 {
 public:
@@ -81,6 +83,7 @@ public:
     void writePattern(const uint8_t * data, uint8_t size, uint32_t repeat);
 
     spi_t * bus(){ return _spi; }
+    int8_t pinSS() { return _ss; }
 };
 
 extern SPIClass SPI;
