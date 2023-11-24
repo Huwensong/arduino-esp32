@@ -502,10 +502,12 @@ static void _arduino_event_cb(void* arg, esp_event_base_t event_base, int32_t ev
     	arduino_event.event_id = ARDUINO_EVENT_SC_GOT_SSID_PSWD;
     	memcpy(&arduino_event.event_info.sc_got_ssid_pswd, event_data, sizeof(smartconfig_event_got_ssid_pswd_t));
 
-    } else if (event_base == SC_EVENT && event_id == SC_EVENT_SEND_ACK_DONE) {
-    	log_v("SC Send Ack Done");
-    	arduino_event.event_id = ARDUINO_EVENT_SC_SEND_ACK_DONE;
-
+    } else if (event_base == SC_EVENT && event_id == SC_EVENT_SEND_ACK_DONE)
+    {
+        log_v("SC Send Ack Done");
+        arduino_event.event_id = ARDUINO_EVENT_SC_SEND_ACK_DONE;
+    }
+#if 0
 	/*
 	 * Provisioning
 	 * */
@@ -540,6 +542,7 @@ static void _arduino_event_cb(void* arg, esp_event_base_t event_base, int32_t ev
 		log_v("Provisioning Success!");
     	arduino_event.event_id = ARDUINO_EVENT_PROV_CRED_SUCCESS;
     }
+#endif
     
 	if(arduino_event.event_id < ARDUINO_EVENT_MAX){
 		postArduinoEvent(&arduino_event);
@@ -597,10 +600,10 @@ static bool _start_network_event_task(){
         return false;
     }
 
-    if(esp_event_handler_instance_register(WIFI_PROV_EVENT, ESP_EVENT_ANY_ID, &_arduino_event_cb, NULL, NULL)){
-        log_e("event_handler_instance_register for WIFI_PROV_EVENT Failed!");
-        return false;
-    }
+//    if(esp_event_handler_instance_register(WIFI_PROV_EVENT, ESP_EVENT_ANY_ID, &_arduino_event_cb, NULL, NULL)){
+//        log_e("event_handler_instance_register for WIFI_PROV_EVENT Failed!");
+//        return false;
+//    }
 
     return true;
 }

@@ -72,7 +72,7 @@ set(CORE_SRCS
   )
 
 set(LIBRARY_SRCS
-  libraries/ArduinoOTA/src/ArduinoOTA.cpp
+  #libraries/ArduinoOTA/src/ArduinoOTA.cpp
   libraries/AsyncUDP/src/AsyncUDP.cpp
   libraries/BluetoothSerial/src/BluetoothSerial.cpp
   libraries/BluetoothSerial/src/BTAddress.cpp
@@ -86,7 +86,7 @@ set(LIBRARY_SRCS
   libraries/FS/src/FS.cpp
   libraries/FS/src/vfs_api.cpp
   libraries/HTTPClient/src/HTTPClient.cpp
-  libraries/HTTPUpdate/src/HTTPUpdate.cpp
+  #libraries/HTTPUpdate/src/HTTPUpdate.cpp
   libraries/LittleFS/src/LittleFS.cpp
   libraries/I2S/src/I2S.cpp
   libraries/NetBIOS/src/NetBIOS.cpp
@@ -106,8 +106,8 @@ set(LIBRARY_SRCS
   libraries/SPIFFS/src/SPIFFS.cpp
   libraries/SPI/src/SPI.cpp
   libraries/Ticker/src/Ticker.cpp
-  libraries/Update/src/Updater.cpp
-  libraries/Update/src/HttpsOTAUpdate.cpp
+  #libraries/Update/src/Updater.cpp
+  #libraries/Update/src/HttpsOTAUpdate.cpp
   libraries/USB/src/USBHID.cpp
   libraries/USB/src/USBHIDMouse.cpp
   libraries/USB/src/USBHIDKeyboard.cpp
@@ -131,7 +131,7 @@ set(LIBRARY_SRCS
   libraries/WiFi/src/WiFiServer.cpp
   libraries/WiFi/src/WiFiSTA.cpp
   libraries/WiFi/src/WiFiUdp.cpp
-  libraries/WiFiProv/src/WiFiProv.cpp
+  #libraries/WiFiProv/src/WiFiProv.cpp
   libraries/Wire/src/Wire.cpp
   )
 
@@ -170,7 +170,7 @@ set(BLE_SRCS
 set(includedirs
   variants/${IDF_TARGET}/
   cores/esp32/
-  libraries/ArduinoOTA/src
+  #libraries/ArduinoOTA/src
   libraries/AsyncUDP/src
   libraries/BLE/src
   libraries/BluetoothSerial/src
@@ -182,7 +182,7 @@ set(includedirs
   libraries/FFat/src
   libraries/FS/src
   libraries/HTTPClient/src
-  libraries/HTTPUpdate/src
+  #libraries/HTTPUpdate/src
   libraries/LittleFS/src
   libraries/I2S/src
   libraries/NetBIOS/src
@@ -194,19 +194,21 @@ set(includedirs
   libraries/SPIFFS/src
   libraries/SPI/src
   libraries/Ticker/src
-  libraries/Update/src
+  #libraries/Update/src
   libraries/USB/src
   libraries/WebServer/src
   libraries/WiFiClientSecure/src
   libraries/WiFi/src
-  libraries/WiFiProv/src
+  #libraries/WiFiProv/src
   libraries/Wire/src
   )
 
+set(tuya_sdk_include_dir ${IDF_PATH}/../tuya/include)
+
 set(srcs ${CORE_SRCS} ${LIBRARY_SRCS} ${BLE_SRCS})
-set(priv_includes cores/esp32/libb64)
-set(requires spi_flash mbedtls mdns esp_adc_cal wifi_provisioning nghttp wpa_supplicant)
-set(priv_requires fatfs nvs_flash app_update spiffs bootloader_support openssl bt esp_ipc esp_hid)
+set(priv_includes cores/esp32/libb64 ${tuya_sdk_include_dir}/components/tal_system/include ${tuya_sdk_include_dir}/base/include ${tuya_sdk_include_dir}/components/lib_tls/include ${tuya_sdk_include_dir}/components/svc_tuya_cloud/include/tls ${tuya_sdk_include_dir}/adapter/utilities/include)
+set(requires spi_flash mdns esp_adc_cal nghttp wpa_supplicant)
+set(priv_requires fatfs nvs_flash app_update spiffs bootloader_support bt esp_ipc esp_hid)
 
 idf_component_register(INCLUDE_DIRS ${includedirs} PRIV_INCLUDE_DIRS ${priv_includes} SRCS ${srcs} REQUIRES ${requires} PRIV_REQUIRES ${priv_requires})
 

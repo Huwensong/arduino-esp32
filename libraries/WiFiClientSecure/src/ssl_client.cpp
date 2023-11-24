@@ -244,7 +244,7 @@ int start_ssl_client(sslclient_context *ssl_client, const char *host, uint32_t p
         }
 
         log_v("Loading private key");
-        ret = mbedtls_pk_parse_key(&ssl_client->client_key, (const unsigned char *)cli_key, strlen(cli_key) + 1, NULL, 0);
+        ret = mbedtls_pk_parse_key(&ssl_client->client_key, (const unsigned char *)cli_key, strlen(cli_key) + 1, NULL, 0,NULL,NULL);
 
         if (ret != 0) {
             mbedtls_x509_crt_free(&ssl_client->client_cert); // cert+key are free'd in pair

@@ -29,7 +29,7 @@
 #include "WiFiType.h"
 #include "IPAddress.h"
 #include "esp_smartconfig.h"
-#include "wifi_provisioning/manager.h"
+//#include "wifi_provisioning/manager.h"
 
 ESP_EVENT_DECLARE_BASE(ARDUINO_EVENTS);
 
@@ -94,7 +94,7 @@ typedef union {
 	smartconfig_event_got_ssid_pswd_t sc_got_ssid_pswd;
 	esp_eth_handle_t eth_connected;
 	wifi_sta_config_t prov_cred_recv;
-	wifi_prov_sta_fail_reason_t prov_fail_reason;
+	//wifi_prov_sta_fail_reason_t prov_fail_reason;
 } arduino_event_info_t;
 
 typedef struct{
