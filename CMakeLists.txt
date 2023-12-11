@@ -257,3 +257,6 @@ endif()
 if(NOT CONFIG_ARDUINO_SELECTIVE_COMPILATION OR CONFIG_ARDUINO_SELECTIVE_LITTLEFS)
     maybe_add_component(esp_littlefs)
 endif()
+
+target_compile_definitions(${COMPONENT_TARGET} PRIVATE -DBOARD_HAS_PSRAM)
+
