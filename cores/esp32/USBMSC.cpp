@@ -13,7 +13,7 @@
 // limitations under the License.
 #include "USBMSC.h"
 
-#if CONFIG_TINYUSB_MSC_ENABLED
+#if CONFIG_TINYUSB_CDC_ENABLED
 
 #include "esp32-hal-tinyusb.h"
 
