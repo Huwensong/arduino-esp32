@@ -197,95 +197,79 @@ esp_err_t adc_io_to_channel(int io_num, adc_unit_t *const unit_id, adc_channel_t
     }
     return (found) ? ESP_OK : ESP_ERR_NOT_FOUND;
 }
+#define ADC_USE_OLD
+#ifdef ADC_USE_OLD
+uint32_t __analogReadMilliVolts(uint8_t pin){
+    int8_t channel = digitalPinToAnalogChannel(pin);
+    if(channel < 0){
+        log_e("Pin %u is not ADC pin!", pin);
+        return 0;
+    }
 
+    if(!__analogVRef){
+        if (esp_adc_cal_check_efuse(ESP_ADC_CAL_VAL_EFUSE_TP) == ESP_OK) {
+            log_d("eFuse Two Point: Supported");
+            __analogVRef = DEFAULT_VREF;
+        }
+        if (esp_adc_cal_check_efuse(ESP_ADC_CAL_VAL_EFUSE_VREF) == ESP_OK) {
+            log_d("eFuse Vref: Supported");
+            __analogVRef = DEFAULT_VREF;
+        }
+        if(!__analogVRef){
+            __analogVRef = DEFAULT_VREF;
+
+            #if CONFIG_IDF_TARGET_ESP32
+            if(__analogVRefPin){
+                esp_adc_cal_characteristics_t chars;
+                if(adc_vref_to_gpio(ADC_UNIT_2, __analogVRefPin) == ESP_OK){
+                    __analogVRef = __analogRead(__analogVRefPin);
+                    esp_adc_cal_characterize(1, __analogAttenuation, __analogWidth, DEFAULT_VREF, &chars);
+                    __analogVRef = esp_adc_cal_raw_to_voltage(__analogVRef, &chars);
+                    log_d("Vref to GPIO%u: %u", __analogVRefPin, __analogVRef);
+                }
+            }
+            #endif
+        }
+    }
+    uint8_t unit = 1;
+    if(channel > (SOC_ADC_MAX_CHANNEL_NUM - 1)){
+        unit = 2;
+    }
+
+    uint16_t adc_reading = __analogRead(pin);
+
+    uint8_t atten = __analogAttenuation;
+    if (__pin_attenuation[pin] != ADC_ATTENDB_MAX){
+        atten = __pin_attenuation[pin];
+    }
+
+    esp_adc_cal_characteristics_t chars = {};
+    esp_adc_cal_value_t val_type = esp_adc_cal_characterize(unit, atten, __analogWidth, __analogVRef, &chars);
+
+    static bool print_chars_info = true;
+    if(print_chars_info)
+    {
+        if (val_type == ESP_ADC_CAL_VAL_EFUSE_TP) {
+            log_i("ADC%u: Characterized using Two Point Value: %u\n", unit, chars.vref);
+        }
+        else if (val_type == ESP_ADC_CAL_VAL_EFUSE_VREF) {
+            log_i("ADC%u: Characterized using eFuse Vref: %u\n", unit, chars.vref);
+        }
+        #if CONFIG_IDF_TARGET_ESP32
+        else if(__analogVRef != DEFAULT_VREF){
+            log_i("ADC%u: Characterized using Vref to GPIO%u: %u\n", unit, __analogVRefPin, chars.vref);
+        }
+        #endif
+        else {
+            log_i("ADC%u: Characterized using Default Vref: %u\n", unit, chars.vref);
+        }
+        print_chars_info = false;
+    }
+    return esp_adc_cal_raw_to_voltage((uint32_t)adc_reading, &chars);
+}
+#else
 adc_cali_handle_t adc_calib_handle[ADC_ATTEN_MAX] = {NULL};
 
-//uint32_t __analogReadMilliVolts(uint8_t pin) {
-//    int8_t channel = digitalPinToAnalogChannel(pin);
-//    esp_err_t err = ESP_OK;
-//    adc_unit_t adc_unit;
-//    if (channel < 0) {
-//        log_e("Pin %u is not ADC pin!", pin);
-//        return 0;
-//    }
-//
-//    adc_io_to_channel(pin, &adc_unit, &channel);
-//
-//    if (!__analogVRef) {
-//        if (esp_adc_cal_check_efuse(ESP_ADC_CAL_VAL_EFUSE_TP) == ESP_OK) {
-//            log_d("eFuse Two Point: Supported");
-//            __analogVRef = DEFAULT_VREF;
-//        }
-//        if (esp_adc_cal_check_efuse(ESP_ADC_CAL_VAL_EFUSE_VREF) == ESP_OK) {
-//            log_d("eFuse Vref: Supported");
-//            __analogVRef = DEFAULT_VREF;
-//        }
-//        if (!__analogVRef) {
-//            __analogVRef = DEFAULT_VREF;
-//
-//#if CONFIG_IDF_TARGET_ESP32
-//            if(__analogVRefPin){
-//                esp_adc_cal_characteristics_t chars;
-//                if(adc_vref_to_gpio(ADC_UNIT_2, __analogVRefPin) == ESP_OK){
-//                    __analogVRef = __analogRead(__analogVRefPin);
-//                    esp_adc_cal_characterize(1, __analogAttenuation, __analogWidth, DEFAULT_VREF, &chars);
-//                    __analogVRef = esp_adc_cal_raw_to_voltage(__analogVRef, &chars);
-//                    log_d("Vref to GPIO%u: %u", __analogVRefPin, __analogVRef);
-//                }
-//            }
-//#endif
-//        }
-//    }
-//    uint8_t unit = 1;
-//    if (channel > (SOC_ADC_MAX_CHANNEL_NUM - 1)) {
-//        unit = 2;
-//    }
-//
-//    uint16_t adc_reading = __analogRead(pin);
-//
-//    uint8_t atten = __analogAttenuation;
-//    if (__pin_attenuation[pin] != ADC_ATTENDB_MAX) {
-//        atten = __pin_attenuation[pin];
-//    }
-//
-//        esp_adc_cal_characteristics_t chars = {};
-//        esp_adc_cal_characterize(unit, atten, __analogWidth, __analogVRef, &chars);
-//
-//        log_d("old calib info for unit:%d | a:%u | b:%u | vref:%u",unit, chars.coeff_a,chars.coeff_b,chars.vref);
-////
-////    static bool print_chars_info = true;
-////    if (print_chars_info) {
-////        if (val_type == ESP_ADC_CAL_VAL_EFUSE_TP) {
-////            log_i("ADC%u: Characterized using Two Point Value: %u\n", unit, chars.vref);
-////        } else if (val_type == ESP_ADC_CAL_VAL_EFUSE_VREF) {
-////            log_i("ADC%u: Characterized using eFuse Vref: %u\n", unit, chars.vref);
-////        }
-////#if CONFIG_IDF_TARGET_ESP32
-////            else if(__analogVRef != DEFAULT_VREF){
-////                log_i("ADC%u: Characterized using Vref to GPIO%u: %u\n", unit, __analogVRefPin, chars.vref);
-////            }
-////#endif
-////        else {
-////            log_i("ADC%u: Characterized using Default Vref: %u\n", unit, chars.vref);
-////        }
-////        print_chars_info = false;
-////    }
-//    adc_cali_curve_fitting_config_t cali_config = {
-//            .unit_id = adc_unit,
-//            .atten = atten,
-//            .bitwidth = __analogWidth + 9,
-//    };
-//    int value = 0;
-//    if (adc_calib_handle[atten] == NULL) {
-//        log_d("create calib handle for unit:%d | atten:%d", adc_unit, atten);
-//        adc_cali_create_scheme_curve_fitting(&cali_config, &adc_calib_handle[atten]);
-//
-//    }
-//    adc_cali_raw_to_voltage(adc_calib_handle[atten], adc_reading, &value);
-//    log_d("xxxxxxxxxxx adc new %d | %d", adc_reading, value);
-//    log_d("xxxxxxxxxxx adc old %d | %d", adc_reading, esp_adc_cal_raw_to_voltage((uint32_t)adc_reading, &chars));
-//    return value;
-//}
 uint32_t __analogReadMilliVolts(uint8_t pin) {
     int8_t channel = digitalPinToAnalogChannel(pin);
     adc_unit_t adc_unit;
@@ -341,7 +325,7 @@ uint32_t __analogReadMilliVolts(uint8_t pin) {
     adc_cali_raw_to_voltage(adc_calib_handle[atten], adc_reading, &value);
     return value;
 }
-
+#endif
 #if CONFIG_IDF_TARGET_ESP32
 
 void __analogSetVRefPin(uint8_t pin){
