@@ -58,8 +58,8 @@ void esp_crt_bundle_detach(mbedtls_ssl_config *conf);
  *
  * @param[in]  x509_bundle     A pointer to the certificate bundle.
  */
-void esp_crt_bundle_set(const uint8_t *x509_bundle);
-
+//void esp_crt_bundle_set(const uint8_t *x509_bundle);
+esp_err_t esp_crt_bundle_set(const uint8_t *x509_bundle, size_t bundle_size);
 
 #ifdef __cplusplus
 }

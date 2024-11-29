@@ -24,6 +24,7 @@
 #include "WiFi.h"
 #include "esp_system.h"
 #include "esp_eth.h"
+#include "IPv6Address.h"
 
 #ifndef ETH_PHY_ADDR
 #define ETH_PHY_ADDR 0
@@ -100,9 +101,8 @@ class ETHClass {
 
         uint8_t * macAddress(uint8_t* mac);
         String macAddress();
-
-        friend class WiFiClient;
-        friend class WiFiServer;
+      friend class NetworkClient;
+      friend class NetworkServer;
 };
 
 extern ETHClass ETH;

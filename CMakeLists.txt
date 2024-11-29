@@ -130,9 +130,19 @@ set(LIBRARY_SRCS
   libraries/WiFi/src/WiFiScan.cpp
   libraries/WiFi/src/WiFiServer.cpp
   libraries/WiFi/src/WiFiSTA.cpp
+  libraries/WiFi/src/STA.cpp
+  libraries/WiFi/src/AP.cpp
   libraries/WiFi/src/WiFiUdp.cpp
   #libraries/WiFiProv/src/WiFiProv.cpp
   libraries/Wire/src/Wire.cpp
+  libraries/Network/src/NetworkInterface.cpp
+  libraries/Network/src/NetworkEvents.cpp
+  libraries/Network/src/NetworkManager.cpp
+  libraries/Network/src/NetworkClient.cpp
+  libraries/Network/src/NetworkServer.cpp
+  libraries/Network/src/NetworkUdp.cpp
+  libraries/NetworkClientSecure/src/ssl_client.cpp
+  libraries/NetworkClientSecure/src/NetworkClientSecure.cpp
   )
 
 set(BLE_SRCS
@@ -182,6 +192,8 @@ set(includedirs
   libraries/FFat/src
   libraries/FS/src
   libraries/HTTPClient/src
+  libraries/Network/src
+  libraries/NetworkClientSecure/src
   #libraries/HTTPUpdate/src
   libraries/LittleFS/src
   libraries/I2S/src
@@ -258,6 +270,7 @@ if(NOT CONFIG_ARDUINO_SELECTIVE_COMPILATION OR CONFIG_ARDUINO_SELECTIVE_LITTLEFS
     maybe_add_component(esp_littlefs)
 endif()
 
+target_compile_definitions(${COMPONENT_LIB} PUBLIC -DSOC_WIFI_SUPPORTED)
 target_compile_definitions(${COMPONENT_TARGET} PRIVATE -DBOARD_HAS_PSRAM)
 target_compile_options(${COMPONENT_LIB} PRIVATE -frtti)
 
