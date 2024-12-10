@@ -19,6 +19,7 @@
 #include "ssl_client.h"
 #include "esp_crt_bundle.h"
 #include "WiFi.h"
+#include "net_sockets.h"
 
 #if !defined(MBEDTLS_KEY_EXCHANGE__SOME__PSK_ENABLED) && !defined(MBEDTLS_KEY_EXCHANGE_SOME_PSK_ENABLED)
 #  warning "Please configure IDF framework to include mbedTLS -> Enable pre-shared-key ciphersuites and activate at least one cipher"
@@ -165,10 +166,10 @@ int start_ssl_client(sslclient_context *ssl_client, const char *host, uint32_t p
     }
 
     if (alpn_protos != NULL) {
-        log_v("Setting ALPN protocols");
-        if ((ret = mbedtls_ssl_conf_alpn_protocols(&ssl_client->ssl_conf, alpn_protos) ) != 0) {
-            return handle_error(ret);
-        }
+//        log_v("Setting ALPN protocols");
+//        if ((ret = mbedtls_ssl_conf_alpn_protocols(&ssl_client->ssl_conf, alpn_protos) ) != 0) {
+//            return handle_error(ret);
+//        }
     }
 
     // MBEDTLS_SSL_VERIFY_REQUIRED if a CA certificate is defined on Arduino IDE and
