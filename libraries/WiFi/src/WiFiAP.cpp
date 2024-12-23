@@ -268,6 +268,35 @@ IPAddress WiFiAPClass::softAPIP()
     return IPAddress(ip.ip.addr);
 }
 
+IPAddress WiFiAPClass::softAPGateway()
+{
+	if(WiFiGenericClass::getMode() == WIFI_MODE_NULL){
+		return IPAddress();
+	}
+
+	esp_netif_ip_info_t ip;
+	if(esp_netif_get_ip_info(get_esp_interface_netif(ESP_IF_WIFI_AP), &ip) != ESP_OK){
+		log_e("Netif Get IP Failed!");
+		return IPAddress();
+	}
+
+	return IPAddress(ip.gw.addr);
+}
+IPAddress WiFiAPClass::softAPSubnet()
+{
+	if(WiFiGenericClass::getMode() == WIFI_MODE_NULL){
+		return IPAddress();
+	}
+
+	esp_netif_ip_info_t ip;
+	if(esp_netif_get_ip_info(get_esp_interface_netif(ESP_IF_WIFI_AP), &ip) != ESP_OK){
+		log_e("Netif Get IP Failed!");
+		return IPAddress();
+	}
+
+	return IPAddress(ip.netmask.addr);
+}
+
 /**
  * Get the softAP broadcast IP address.
  * @return IPAddress softAP broadcastIP

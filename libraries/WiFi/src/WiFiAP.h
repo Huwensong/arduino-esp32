@@ -44,6 +44,8 @@ public:
     uint8_t softAPgetStationNum();
 
     IPAddress softAPIP();
+	IPAddress softAPGateway();
+	IPAddress softAPSubnet();
 
     IPAddress softAPBroadcastIP();
     IPAddress softAPNetworkID();
